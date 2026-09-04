@@ -1,0 +1,9 @@
+{
+	"_readme": "Sortie remote-config lite. The game fetches this file ONCE per session, with a hard timeout (data/ads.json `remote_config.timeout_seconds`), and deep-merges what it finds over the shipped data/ads.json and data/economy.json. It is how a live ad-cadence or coin-price number is changed without a store release. Only the top-level keys `ads` and `economy` are read; everything else here (including this one) is ignored by design. The two empty objects below are a deliberate NO-OP: they apply cleanly, change nothing, and make the round trip visible as a `remote_config{applied:true}` event, which is how you tell `the fetch worked and moved nothing` apart from `the fetch never happened`. A payload that is malformed, a 404, a timeout and no network at all are the same non-event as this file - the game falls back to its shipped defaults and never blocks boot. How to edit, what the worked examples are, and the list of keys that must NEVER be changed from here are in the game repo at docs/ops.md. Read that first; some of the keys this file could technically reach are frozen by docs/rules.md or promised by the published privacy policy.",
+	"_docs": "https://github.com/pmccurry/catnap-legal — edit config/sortie.json on main, push, and the next session picks it up. Live at https://pmccurry.github.io/catnap-legal/config/sortie.json",
+	"_updated": "2026-09-04",
+
+	"ads": {},
+
+	"economy": {}
+}
