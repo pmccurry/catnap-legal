@@ -1,0 +1,24 @@
+{
+	"_readme": "PUBLISH THIS FILE to the pmccurry/catnap-legal GitHub Pages repo at config/sushitower.json, where the game fetches it from https://pmccurry.github.io/catnap-legal/config/sushitower.json (data/ads.json's remote_config.url). It is kept in this repo so the published version has a reviewed source and a history; nothing reads it from here. A push to that repo is the whole deploy - no server, no account, HTTPS enforced by Pages.",
+
+	"_how_it_works": "One static JSON, fetched once per session with a hard timeout, DEEP-MERGED over the game's shipped data/ads.json and data/economy.json. A key present here replaces the shipped one; a key absent here leaves the shipped one exactly as it is, so this file can never blank a setting by omission. A malformed payload, a timeout, a 404 and no network at all are all the same non-event: the game keeps its shipped defaults and never blocks boot on any of it.",
+
+	"_ships_empty_on_purpose": "Both blocks are empty and that is the intended steady state. An empty payload applies CLEANLY and moves nothing, so the round trip is visible in telemetry as remote_config{applied:true} without a single number changing - which means the mechanism can be verified working before it is ever needed. A file that had to carry a real override to prove itself would be a mechanism nobody tested until the day they were relying on it.",
+
+	"_what_this_is_for": "Three things, in the order they are likely to be needed. (1) THE AD UNIT IDS: `ads.unit_ids.release` ships empty because there is no AdMob app for Sushi Tower yet, and when the units exist they arrive through here rather than through a store release - see docs/build.md. (2) AD CADENCE: how often an interstitial may show, how long the boost video's cooldown is. (3) THE GROWTH FACTOR, which is the one that matters: docs/telemetry.md's killer metric is the wall-clock-at-floor-N distribution against tools/economy_sim.py's human-bot prediction, and drift beyond 1.5x slow at any floor means the wall is early. Through this file that is a push; without it, a store release and a week.",
+
+	"_never_tune_these": "docs/build.md carries the list and the reasons, and this is the short version: NOT ads.telemetry.endpoint or app_key (repointing a collector remotely is an exfiltration primitive, and the privacy policy names what the endpoint does); NOT ads.consent.denied_policy (the privacy policy documents that choice in words, so changing it makes the policy false); NOT any SKU id or gem-pack KEY (Play queries product details once, at connect - a product the shipped build did not know about has no price and cannot be bought, so moving an identity here breaks the shop rather than extending it; the AMOUNTS are fine); and nothing docs/rules.md freezes - the boost multiplier, the offline cap, the eight-floor tower, the step order. Those are the frozen model and a remote payload is not the place to un-freeze one.",
+
+	"_debug_builds_ignore_this": "A debug build does not take live tuning unless data/ads.json's remote_config.force is set. Every test suite boots the Ads facade, and a number parked in this file would silently merge itself into all of them - a green suite on Monday and a red one on Tuesday because somebody moved a price, with nothing in the diff. Set force true to verify the URL from a desktop; a release build ignores it and always fetches.",
+
+	"ads": {
+		"unit_ids": {
+			"release": {
+				"app_id": "ca-app-pub-7608729160871678~9963309402",
+				"interstitial": "ca-app-pub-7608729160871678/9687977237",
+				"rewarded": "ca-app-pub-7608729160871678/7061813897"
+			}
+		}
+	},
+	"economy": {}
+}
